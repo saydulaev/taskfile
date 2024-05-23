@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0](https://github.com/saydulaev/taskfile/compare/v1.0.0...v1.1.0) (2024-05-23)
+
+
+### Features
+
+* **container:** Add docker compose tasks ([23a1e6b](https://github.com/saydulaev/taskfile/commit/23a1e6b3e60da3860bad9ff605fbdba44faf07a9))
+
 ## 1.0.0 (2024-05-23)
 
 
