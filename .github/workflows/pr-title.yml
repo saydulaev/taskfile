@@ -1,5 +1,9 @@
 name: 'Validate PR title'
 
+permissions:
+  pull-requests: write
+  statuses: write
+
 on:
   pull_request_target:
     types:
@@ -14,7 +18,7 @@ jobs:
     steps:
       # Please look up the latest version from
       # https://github.com/amannn/action-semantic-pull-request/releases
-      - uses: amannn/action-semantic-pull-request@v5.4.0
+      - uses: amannn/action-semantic-pull-request@v5.5.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -26,8 +30,22 @@ jobs:
             docs
             ci
             chore
+          scopes: |
+            terraform
+            security
+            security/sast
+            security/dast
+            ansible
+            helm
+            kustomize
+            cue
+            container
+            python
+            go
+            rust
+            workflows
           # Configure that a scope must always be provided.
-          requireScope: false
+          requireScope: true
           # Configure additional validation for the subject based on a regex.
           # This example ensures the subject starts with an uppercase character.
           subjectPattern: ^[A-Z].+$
