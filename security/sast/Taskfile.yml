@@ -1,0 +1,10 @@
+---
+version: '3'
+
+includes:
+  trivy:
+    taskfile: /Users/ruslan/projects/github/taskfile/security/sast/Trivy.yml
+  checkov:
+    taskfile: /Users/ruslan/projects/github/taskfile/security/sast/Checkov.yml
+  grype:
+    taskfile: /Users/ruslan/projects/github/taskfile/security/sast/Grype.yml
