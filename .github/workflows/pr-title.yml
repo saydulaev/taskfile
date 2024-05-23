@@ -9,6 +9,9 @@ on:
 
 jobs:
   main:
+    permissions:
+      pull-requests: read
+      statuses: write
     name: Validate PR title
     runs-on: ubuntu-latest
     steps:
@@ -27,7 +30,7 @@ jobs:
             ci
             chore
           # Configure that a scope must always be provided.
-          requireScope: false
+          requireScope: true
           # Configure additional validation for the subject based on a regex.
           # This example ensures the subject starts with an uppercase character.
           subjectPattern: ^[A-Z].+$
