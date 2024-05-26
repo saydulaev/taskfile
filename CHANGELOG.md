@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.0](https://github.com/saydulaev/taskfile/compare/v1.2.1...v1.3.0) (2024-05-26)
+
+
+### Features
+
+* **taskfile:** Add global Taskfile that will include all other tasks ([17ab5f5](https://github.com/saydulaev/taskfile/commit/17ab5f539e79ad43578c725385be888ac6d706d2))
+
 ## [1.2.1](https://github.com/saydulaev/taskfile/compare/v1.2.0...v1.2.1) (2024-05-26)
 
 
