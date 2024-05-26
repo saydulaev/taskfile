@@ -7,8 +7,9 @@ tasks:
       Create and start containers
 
       Task supports following vars:
-      . FLAGS   (optional) - Docker compose up options
-      . SERVICE (optional) - Service name
+      . GLOABAL_FLAGS (optional) - Docker compose options
+      . FLAGS         (optional) - Docker compose up options   
+      . SERVICE       (optional) - Service name
 
       Usage:
       ---
@@ -46,15 +47,20 @@ tasks:
         msg: Docker must be running
     silent: true
     cmds:
-      - docker compose {{if .FLAGS}}{{.FLAGS}}{{else}}-d{{end}} up {{.SERVICE}}
+      - >
+        docker compose
+        {{if .GLOBAL_FLAGS}}{{.GLOBAL_FLAGS}}{{end}} up
+        {{if .FLAGS}}{{.FLAGS}}{{else}}--detach{{end}}
+        {{.SERVICE}}
 
   down:
     summary: |
       Stop and remove containers, networks
 
       Task supports following vars:
-      . FLAGS   (optional) - Docker compose down options
-      . SERVICE (optional) - Service name
+      . GLOBAL_FLAGS  (optional) - Docker compose options
+      . FLAGS         (optional) - Docker compose down options
+      . SERVICE       (optional) - Service name
 
       Usage:
       ---
@@ -87,4 +93,4 @@ tasks:
     desc: Stop and remove containers, networks
     silent: true
     cmds:
-      - docker compose {{.FLAGS}} down {{.SERVICE}}
+      - docker compose {{.GLOBAL_FLAGS}} down {{.FLAGS}} {{.SERVICE}}
