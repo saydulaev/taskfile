@@ -131,7 +131,7 @@ tasks:
         docker run -v {{.USER_WORKING_DIR}}:/project
         -t hashicorp/terraform:{{.TERRAFORM_IMAGE_TAG}}
          -chdir=/project {{.GLOBAL_FLAGS}} plan {{.FLAGS}}
-        {{else}}        
+        {{else}}
         terraform {{.GLOBAL_FLAGS}} plan {{.FLAGS}}
         {{end}}
 
