@@ -31,6 +31,7 @@ jobs:
             ci
             chore
           scopes: |
+            taskfile
             terraform
             security
             security/sast
