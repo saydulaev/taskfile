@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.2](https://github.com/saydulaev/taskfile/compare/v1.3.1...v1.3.2) (2024-05-26)
+
+
+### Bug Fixes
+
+* **security/sast:** Fix Checkov task. ([5ebc74b](https://github.com/saydulaev/taskfile/commit/5ebc74bdde425c37bbd21355fe9645f58d00a68c))
+* **security/sast:** Fix Grype task ([6d59d1a](https://github.com/saydulaev/taskfile/commit/6d59d1a8b8d1213d613f3e3c5ecdeaec81804af3))
+* **terraform:** Fix terraform tasks ([77d45ef](https://github.com/saydulaev/taskfile/commit/77d45ef8003d83137848521a3c59f5f2bfc59f01))
+* **terraform:** Fix yamllint ([4448726](https://github.com/saydulaev/taskfile/commit/4448726efc0153679de7dfa432681da39abcb93f))
+
 ## [1.3.1](https://github.com/saydulaev/taskfile/compare/v1.3.0...v1.3.1) (2024-05-26)
 
 
