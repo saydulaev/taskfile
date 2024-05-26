@@ -116,7 +116,7 @@ tasks:
       GRYPE_SEARCH_INDEXED_ARCHIVES: '{{if .GRYPE_SEARCH_INDEXED_ARCHIVES}}{{.GRYPE_SEARCH_INDEXED_ARCHIVES}}{{else}}true{{end}}'
       GRYPE_EXCLUDE: '{{if .GRYPE_EXCLUDE}}{{.GRYPE_EXCLUDE}}{{end}}'
       GRYPE_DB_UPDATE_URL: '{{if .GRYPE_DB_UPDATE_URL}}{{.GRYPE_DB_UPDATE_URL}}{{else}}https://toolbox-data.anchore.io/grype/databases/listing.json{{end}}'
-      GRYPE_DB_CA_CERT: '{{if .GRYPE_DB_CA_CERT}}{{.GRYPE_DB_CA_CERT}}{{else}}""{{end}}'
+      GRYPE_DB_CA_CERT: '{{if .GRYPE_DB_CA_CERT}}{{.GRYPE_DB_CA_CERT}}{{end}}'
       GRYPE_DB_AUTO_UPDATE: '{{if .GRYPE_DB_AUTO_UPDATE}}{{.GRYPE_DB_AUTO_UPDATE}}{{else}}false{{end}}'
       GRYPE_DB_VALIDATE_BY_HASH_ON_START: '{{if .GRYPE_DB_VALIDATE_BY_HASH_ON_START}}{{.GRYPE_DB_VALIDATE_BY_HASH_ON_START}}{{else}}false{{end}}'
       GRYPE_DB_VALIDATE_AGE: '{{if .GRYPE_DB_VALIDATE_AGE}}{{.GRYPE_DB_VALIDATE_AGE}}{{else}}true{{end}}'
@@ -160,7 +160,7 @@ tasks:
         -v {{if .TARGET}}{{.TARGET}}{{else}}{{.USER_WORKING_DIR}}{{end}}:/project
         --workdir /project
         anchore/grype:{{.GRYPE_IMAGE_TAG}}
-        {{.OPTIONS}} /project
+        {{.FLAGS}} /project
         {{else}}
         grype {{.FLAGS}}
         {{if .TARGET}}{{.TARGET}}{{else}}{{.USER_WORKING_DIR}}{{end}}
