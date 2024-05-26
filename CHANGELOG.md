@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0](https://github.com/saydulaev/taskfile/compare/v1.3.3...v1.4.0) (2024-05-26)
+
+
+### Features
+
+* **container:** Add `GLOBAL_GLAGS` var to docker-compose tasks. ([af1a165](https://github.com/saydulaev/taskfile/commit/af1a165564a4d229a959c807b58b8f3ac48ef31a))
+
 ## [1.3.3](https://github.com/saydulaev/taskfile/compare/v1.3.2...v1.3.3) (2024-05-26)
 
 
