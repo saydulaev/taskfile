@@ -46,7 +46,7 @@ tasks:
         msg: Docker must be running
     silent: true
     cmds:
-      - docker compose up {{if .FLAGS}}{{.FLAGS}}{{else}}-d{{end}} {{.SERVICE}}
+      - docker compose {{if .FLAGS}}{{.FLAGS}}{{else}}-d{{end}} up {{.SERVICE}}
 
   down:
     summary: |
@@ -87,4 +87,4 @@ tasks:
     desc: Stop and remove containers, networks
     silent: true
     cmds:
-      - docker compose down {{.FLAGS}} {{.SERVICE}}
+      - docker compose {{.FLAGS}} down {{.SERVICE}}
