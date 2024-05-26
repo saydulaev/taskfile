@@ -71,9 +71,11 @@ tasks:
         {{if eq .TASK_RUNTIME "docker"}}
         docker run -v {{.USER_WORKING_DIR}}:/project
         -t hashicorp/terraform:{{.TERRAFORM_IMAGE_TAG}}
-        -chdir=/project {{.GLOBAL_OPTIONS}} init{{.OPTIONS}}
+        -chdir=/project {{.GLOBAL_FLAGS}} init{{.FLAGS}}
         {{else}}
-        terraform {{.GLOBAL_OPTIONS}}init{{.OPTIONS}} {{.USER_WORKING_DIR}}
+        terraform
+        {{if .GLOBAL_FLAGS}}{{.GLOBAL_FLAGS}}{{else}}-chdir={{.USER_WORKING_DIR}}{{end}}
+        init {{.FLAGS}}
         {{end}}
 
   plan:
@@ -121,8 +123,6 @@ tasks:
         task "root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}} -var-file=filename"
     desc: terraform plan
     silent: true
-    deps:
-      - '{{if eq .TASK_RUNTIME "docker"}}init{{end}}'
     preconditions:
       - *TASK_RUNTIME_VAR
     cmds:
@@ -130,9 +130,9 @@ tasks:
         {{if eq .TASK_RUNTIME "docker"}}
         docker run -v {{.USER_WORKING_DIR}}:/project
         -t hashicorp/terraform:{{.TERRAFORM_IMAGE_TAG}}
-         -chdir=/project{{.GLOBAL_OPTIONS}} plan{{.OPTIONS}}
-        {{else}}
-        terraform {{.GLOBAL_OPTIONS}}plan{{.OPTIONS}} {{.USER_WORKING_DIR}}
+         -chdir=/project {{.GLOBAL_FLAGS}} plan {{.FLAGS}}
+        {{else}}        
+        terraform {{.GLOBAL_FLAGS}} plan {{.FLAGS}}
         {{end}}
 
   apply:
@@ -181,15 +181,14 @@ tasks:
     silent: true
     preconditions:
       - *TASK_RUNTIME_VAR
-    deps: [init]
     cmds:
       - >
         {{if eq .TASK_RUNTIME "docker"}}
         docker run -v {{.USER_WORKING_DIR}}:/project
         -t hashicorp/terraform:{{.TERRAFORM_IMAGE_TAG}}
-        -chdir=/project {{.GLOBAL_OPTIONS}} apply -auto-approve{{.OPTIONS}}
+        -chdir=/project {{.GLOBAL_FLAGS}} apply -auto-approve{{.FLAGS}}
         {{else}}
-        terraform {{.GLOBAL_OPTIONS}}apply -auto-approve{{.OPTIONS}}
+        terraform {{.GLOBAL_FLAGS}} apply -auto-approve {{.FLAGS}}
         {{end}}
 
   destroy:
@@ -235,7 +234,6 @@ tasks:
         task "root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}} -var-file=filename"
     desc: terraform destroy
     silent: true
-    deps: ['init']
     prompt: |
       Exucute terraform destroy could be dangerous
       Do you want to continue?
@@ -248,9 +246,9 @@ tasks:
       - >
         {{if eq .TASK_RUNTIME "docker"}}
         docker run -v {{.USER_WORKING_DIR}}:/project hashicorp/terraform:{{.TERRAFORM_IMAGE_TAG}}
-         -chdir=/project {{.GLOBAL_OPTIONS}} destroy -auto-approve{{.OPTIONS}}
+         -chdir=/project {{.GLOBAL_FLAGS}} destroy -auto-approve {{.FLAGS}}
         {{else}}
-        terraform {{.GLOBAL_OPTIONS}} destroy -auto-approve{{.OPTIONS}}
+        terraform {{.GLOBAL_FLAGS}} destroy -auto-approve {{.FLAGS}}
         {{end}}
 
   fmt:
@@ -306,9 +304,9 @@ tasks:
       - >
         {{if eq .TASK_RUNTIME "docker"}}
         docker run -v {{.USER_WORKING_DIR}}:/project hashicorp/terraform:{{.TERRAFORM_IMAGE_TAG}}
-        -chdir=/project {{.GLOBAL_OPTIONS}} init{{.OPTIONS}} /project
+        -chdir=/project {{.GLOBAL_FLAGS}} init{{.FLAGS}} /project
         {{else}}
-        terraform {{.GLOBAL_OPTIONS}} fmt {{.OPTIONS}}
+        terraform {{.GLOBAL_FLAGS}} fmt {{.FLAGS}}
         {{if .TARGET}}{{.TARGET}}{{else}}{{.USER_WORKING_DIR}}{{end}}
         {{end}}
 
@@ -362,9 +360,9 @@ tasks:
       - >
         {{if eq .TASK_RUNTIME "docker"}}
         docker run -v {{.USER_WORKING_DIR}}:/project hashicorp/terraform:{{.TERRAFORM_IMAGE_TAG}}
-        -chdir=/project {{.GLOBAL_OPTIONS}} validate{{.OPTIONS}} /project
+        -chdir=/project {{.GLOBAL_FLAGS}} validate{{.FLAGS}} /project
         {{else}}
-        terraform validate {{.GLOBAL_OPTIONS}} {{.OPTIONS}}
+        terraform {{.GLOBAL_FLAGS}} validate {{.FLAGS}}
         {{end}}
 
   doc:
