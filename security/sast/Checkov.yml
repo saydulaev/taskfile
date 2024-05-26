@@ -13,6 +13,7 @@ tasks:
 
       Task supports following vars:
       . TASK_RUNTIME                      (optional) - [docker/devbox(default)]
+      . TARGET                            (optional) - Directory path to analyse
       . CKV_FRAMEWORK                     (optional) - Filter scan to run only on specific infrastructure code frameworks
       . CKV_CHECK                         (optional) - Checks to run; any other checks will be skipped. Enter one or more items separated by commas
       . CKV_SKIP_CHECK                    (optional) - Checks to skip; any other checks will not be run. Enter one or more items separated by commas
@@ -85,5 +86,6 @@ tasks:
         bridgecrew/checkov:{{.CHECKOV_IMAGE_TAG}}
         {{if .FLAGS}}{{.FLAGS}}{{else}}--directory /project{{end}}
         {{else}}
-        checkov {{if .FLAGS}}{{.FLAGS}}{{else}}--directory {{.USER_WORKING_DIR}}{{end}}
+        ./checkov.sh {{.FLAGS}}
+        {{if .TARGET}}--directory {{.TARGET}}{{else}}--directory {{.USER_WORKING_DIR}}{{end}}
         {{end}}
