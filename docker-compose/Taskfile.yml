@@ -8,7 +8,7 @@ tasks:
 
       Task supports following vars:
       . GLOABAL_FLAGS (optional) - Docker compose options
-      . FLAGS         (optional) - Docker compose up options   
+      . FLAGS         (optional) - Docker compose up options
       . SERVICE       (optional) - Service name
 
       Usage:
