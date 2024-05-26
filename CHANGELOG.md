@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.1](https://github.com/saydulaev/taskfile/compare/v1.3.0...v1.3.1) (2024-05-26)
+
+
+### Bug Fixes
+
+* **container:** Add desc field to docker-compose:up task. ([c6d3b45](https://github.com/saydulaev/taskfile/commit/c6d3b451d86ef430b0bae667c9564fda91bf8ab3))
+
 ## [1.3.0](https://github.com/saydulaev/taskfile/compare/v1.2.1...v1.3.0) (2024-05-26)
 
 
