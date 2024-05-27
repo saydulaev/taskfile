@@ -86,6 +86,8 @@ tasks:
         bridgecrew/checkov:{{.CHECKOV_IMAGE_TAG}}
         {{if .FLAGS}}{{.FLAGS}}{{else}}--directory /project{{end}}
         {{else}}
-        {{.TASKFILE_DIR}}/checkov.sh {{.FLAGS}}
+        if [ -z "${CKV_CHECK}" ]; then unset CKV_CHECK; fi;
+        if [ -z "${CKV_SKIP_CHECK}" ]; then unset CKV_SKIP_CHECK; fi;
+        checkov {{.FLAGS}}
         {{if .TARGET}}--directory {{.TARGET}}{{else}}--directory {{.USER_WORKING_DIR}}{{end}}
         {{end}}
