@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.1](https://github.com/saydulaev/taskfile/compare/v1.4.0...v1.4.1) (2024-05-27)
+
+
+### Bug Fixes
+
+* **security/sast:** Fix script location in Checkov task. ([3161674](https://github.com/saydulaev/taskfile/commit/31616741a545f4b048b5ae2d8275c3f3f3378a7b))
+* **security/sast:** Remove script in Checkov task. ([819edbd](https://github.com/saydulaev/taskfile/commit/819edbddf9cf29ca1fce797fd63007b949c14575))
+
 ## [1.4.0](https://github.com/saydulaev/taskfile/compare/v1.3.3...v1.4.0) (2024-05-26)
 
 
