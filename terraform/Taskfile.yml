@@ -238,9 +238,6 @@ tasks:
       Exucute terraform destroy could be dangerous
       Do you want to continue?
     preconditions:
-      - test -f terraform.tfstate
-      - test -d .terraform
-      - test -f .terraform.lock.hcl
       - *TASK_RUNTIME_VAR
     cmds:
       - >
