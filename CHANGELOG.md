@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.3](https://github.com/saydulaev/taskfile/compare/v1.4.2...v1.4.3) (2024-05-28)
+
+
+### Bug Fixes
+
+* **terraform:** Fix terraform:destroy ([7a751be](https://github.com/saydulaev/taskfile/commit/7a751be7d2e8f8f69dd61d47cb3c5e74bfc6e31e))
+
 ## [1.4.2](https://github.com/saydulaev/taskfile/compare/v1.4.1...v1.4.2) (2024-05-28)
 
 
