@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.2](https://github.com/saydulaev/taskfile/compare/v1.4.1...v1.4.2) (2024-05-28)
+
+
+### Bug Fixes
+
+* **container:** Fix docker-compose:up task. ([b653fbb](https://github.com/saydulaev/taskfile/commit/b653fbbdb595eb3e6b86c9d0530c9c445004140f))
+
 ## [1.4.1](https://github.com/saydulaev/taskfile/compare/v1.4.0...v1.4.1) (2024-05-27)
 
 
