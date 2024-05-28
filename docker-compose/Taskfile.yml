@@ -41,8 +41,6 @@ tasks:
         task "root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}} --no-build --detach"
     desc: Create and start containers
     preconditions:
-      - sh: test -f docker-compose.yaml
-        msg: docker-compose.yaml file must exists
       - sh: docker ps
         msg: Docker must be running
     silent: true
