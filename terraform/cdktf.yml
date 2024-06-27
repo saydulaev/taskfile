@@ -1,0 +1,641 @@
+---
+preconditions:
+  - &TASK_RUNTIME_VAR
+    sh: '{{if eq .TASK_RUNTIME "docker"}}which docker && docker ps{{else}}which terraform{{end}}'
+    msg: |
+      {{if eq .TASK_RUNTIME "docker"}}
+      This task does not support a docker runtime.
+      {{else}}
+      Please make sure that cdktf have been installed
+      https://developer.hashicorp.com/terraform/tutorials/cdktf/cdktf-install
+      {{end}}
+
+version: '3'
+
+vars:
+  TASK_RUNTIME:
+    sh: echo "${TASK_RUNTIME:-devbox}"
+
+
+tasks:
+  init:
+    summary: |
+      Create a new cdktf project from a template.
+
+      Task supports following vars:
+      . TASK_RUNTIME (optional) - devbox(default)
+      . FLAGS        (optional) - cdktf init flags
+
+      Usage:
+      ---
+      includes:
+        cdktf:
+          taskfile: https://raw.githubusercontent.com/saydulaev/taskfile/main/terraform/cdktf.yml
+          internal: true
+
+      tasks:
+        root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic:
+          desc: "Basic"
+          cmds:
+            - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+              vars:
+                FLAGS: '--language="go"'
+                TASK_RUNTIME: devbox
+
+        root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}*:
+          desc: "Wildcard call"
+          cmds:
+            - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+              vars:
+                FLAGS: '{{`{{.MATCH | join " "}}`}}'
+                TASK_RUNTIME: devbox
+
+      Examples:
+        # basic
+        task root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic
+
+        # wildcard
+        task "root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}} --language="go""
+    desc: cdktf get
+    silent: true
+    preconditions:
+      - *TASK_RUNTIME_VAR
+    cmds:
+      - cdktf get {{.FLAGS}}
+
+  get:
+    summary: |
+      Generate CDK Constructs for Terraform providers and modules.
+
+      Task supports following vars:
+      . TASK_RUNTIME (optional) - devbox(default)
+      . FLAGS        (optional) - cdktf get flags
+
+      Usage:
+      ---
+      includes:
+        cdktf:
+          taskfile: https://raw.githubusercontent.com/saydulaev/taskfile/main/terraform/cdktf.yml
+          internal: true
+
+      tasks:
+        root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic:
+          desc: "Basic"
+          cmds:
+            - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+              vars:
+                FLAGS: '--template="go" --providers="aws@~>4.0"'
+                TASK_RUNTIME: devbox
+
+        root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}*:
+          desc: "Wildcard call"
+          cmds:
+            - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+              vars:
+                FLAGS: '{{`{{.MATCH | join " "}}`}}'
+                TASK_RUNTIME: devbox
+
+      Examples:
+        # basic
+        task root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic
+
+        # wildcard
+        task "root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}} --template="go" --providers="aws@~>4.0""
+    desc: cdktf get
+    silent: true
+    preconditions:
+      - *TASK_RUNTIME_VAR
+    cmds:
+      - cdktf get {{.FLAGS}}
+
+  convert:
+    summary: |
+      Converts a single file of HCL configuration to CDK for Terraform. Takes the file to be converted on stdin.
+
+      Task supports following vars:
+      . TASK_RUNTIME (optional) - devbox(default)
+      . FLAGS        (optional) - cdktf convert flags
+
+      Usage:
+      ---
+      includes:
+        cdktf:
+          taskfile: https://raw.githubusercontent.com/saydulaev/taskfile/main/terraform/cdktf.yml
+          internal: true
+
+      tasks:
+        root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic:
+          desc: "Basic"
+          cmds:
+            - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+              vars:
+                FLAGS: '--template="go" --providers="aws@~>4.0"'
+                TASK_RUNTIME: devbox
+
+        root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}*:
+          desc: "Wildcard call"
+          cmds:
+            - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+              vars:
+                FLAGS: '{{`{{.MATCH | join " "}}`}}'
+                TASK_RUNTIME: devbox
+
+      Examples:
+        # basic
+        task root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic
+
+        # wildcard
+        task "root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}} --language="go""
+    desc: cdktf convert
+    silent: true
+    preconditions:
+      - *TASK_RUNTIME_VAR
+    cmds:
+      - cdktf convert {{.FLAGS}}
+
+  deploy:
+    summary: |
+      Deploy the given stacks.
+
+      Task supports following vars:
+      . TASK_RUNTIME (optional) - devbox(default)
+      . POSITION_FLAGS (optional) - cdktf position flags
+      . FLAGS        (optional) - cdktf deploy flags
+
+      Usage:
+      ---
+      includes:
+        cdktf:
+          taskfile: https://raw.githubusercontent.com/saydulaev/taskfile/main/terraform/cdktf.yml
+          internal: true
+
+      tasks:
+        root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic:
+          desc: "Basic"
+          cmds:
+            - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+              vars:
+                POSITION_FLAGS: 'stacks'
+                FLAGS: '--output="cdktf.out"'
+                TASK_RUNTIME: devbox
+
+        root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}*:
+          desc: "Wildcard call"
+          cmds:
+            - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+              vars:
+                POSITION_FLAGS: 'stacks'
+                FLAGS: '{{`{{.MATCH | join " "}}`}}'
+                TASK_RUNTIME: devbox
+
+      Examples:
+        # basic
+        task root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic
+
+        # wildcard
+        task "root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}} stacks"
+    desc: cdktf deploy [stacks...]
+    silent: true
+    preconditions:
+      - *TASK_RUNTIME_VAR
+    cmds:
+      - >
+        cdktf deploy
+        {{if .GLOBAL_FLAGS}}{{.GLOBAL_FLAGS}}{{end}}
+        {{.FLAGS}}
+
+  destroy:
+    summary: |
+      Destroy the given stacks.
+
+      Task supports following vars:
+      . TASK_RUNTIME (optional) - devbox(default)
+      . POSITION_FLAGS (optional) - cdktf position flags
+      . FLAGS        (optional) - cdktf destroy flags
+
+      Usage:
+      ---
+      includes:
+        cdktf:
+          taskfile: https://raw.githubusercontent.com/saydulaev/taskfile/main/terraform/cdktf.yml
+          internal: true
+
+      tasks:
+        root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic:
+          desc: "Basic"
+          cmds:
+            - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+              vars:
+                POSITION_FLAGS: 'stacks'
+                FLAGS: '--output="cdktf.out"'
+                TASK_RUNTIME: devbox
+
+        root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}*:
+          desc: "Wildcard call"
+          cmds:
+            - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+              vars:
+                POSITION_FLAGS: 'stacks'
+                FLAGS: '{{`{{.MATCH | join " "}}`}}'
+                TASK_RUNTIME: devbox
+
+      Examples:
+        # basic
+        task root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic
+
+        # wildcard
+        task "root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}} --output="cdktf.out""
+    desc: cdktf destroy
+    silent: true
+    preconditions:
+      - *TASK_RUNTIME_VAR
+    cmds:
+      - >
+        cdktf destroy
+        {{if .GLOBAL_FLAGS}}{{.GLOBAL_FLAGS}}{{end}}
+        {{.FLAGS}}
+
+  diff:
+    summary: |
+      Perform a diff (terraform plan) for the given stack.
+
+      Task supports following vars:
+      . TASK_RUNTIME (optional) - devbox(default)
+      . POSITION_FLAGS (optional) - cdktf diff position flags
+      . FLAGS        (optional) - cdktf diff flags
+
+      Usage:
+      ---
+      includes:
+        cdktf:
+          taskfile: https://raw.githubusercontent.com/saydulaev/taskfile/main/terraform/cdktf.yml
+          internal: true
+
+      tasks:
+        root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic:
+          desc: "Basic"
+          cmds:
+            - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+              vars:
+                POSITION_FLAGS: 'stacks'
+                FLAGS: '--output="cdktf.out"'
+                TASK_RUNTIME: devbox
+
+        root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}*:
+          desc: "Wildcard call"
+          cmds:
+            - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+              vars:
+                POSITION_FLAGS: 'stacks'
+                FLAGS: '{{`{{.MATCH | join " "}}`}}'
+                TASK_RUNTIME: devbox
+
+      Examples:
+        # basic
+        task root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic
+
+        # wildcard
+        task "root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}} --output="cdktf.out""
+    desc: cdktf diff
+    silent: true
+    preconditions:
+      - *TASK_RUNTIME_VAR
+    cmds:
+      - >
+        cdktf diff
+        {{if .POSITION_FLAGS}}{{.POSITION_FLAGS}}{{end}}
+        {{.FLAGS}}
+
+  list:
+    summary: |
+      List stacks in app.
+
+      Task supports following vars:
+      . TASK_RUNTIME (optional) - devbox(default)
+      . FLAGS        (optional) - cdktf list flags
+
+      Usage:
+      ---
+      includes:
+        cdktf:
+          taskfile: https://raw.githubusercontent.com/saydulaev/taskfile/main/terraform/cdktf.yml
+          internal: true
+
+      tasks:
+        root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic:
+          desc: "Basic"
+          cmds:
+            - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+              vars:
+                FLAGS: '--log-level="INFO"'
+                TASK_RUNTIME: devbox
+
+        root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}*:
+          desc: "Wildcard call"
+          cmds:
+            - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+              vars:
+                FLAGS: '{{`{{.MATCH | join " "}}`}}'
+                TASK_RUNTIME: devbox
+
+      Examples:
+        # basic
+        task root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic
+
+        # wildcard
+        task "root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}} --log-level="INFO""
+    desc: cdktf list
+    silent: true
+    preconditions:
+      - *TASK_RUNTIME_VAR
+    cmds:
+      - cdktf list {{.FLAGS}}
+
+  login:
+    summary: |
+      Retrieves an API token to connect to Terraform Cloud or Terraform Enterprise.
+
+      Task supports following vars:
+      . TASK_RUNTIME (optional) - devbox(default)
+      . FLAGS        (optional) - cdktf login flags
+
+      Usage:
+      ---
+      includes:
+        cdktf:
+          taskfile: https://raw.githubusercontent.com/saydulaev/taskfile/main/terraform/cdktf.yml
+          internal: true
+
+      tasks:
+        root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic:
+          desc: "Basic"
+          cmds:
+            - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+              vars:
+                FLAGS: '--template="go" --providers="aws@~>4.0"'
+                TASK_RUNTIME: devbox
+
+        root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}*:
+          desc: "Wildcard call"
+          cmds:
+            - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+              vars:
+                FLAGS: '{{`{{.MATCH | join " "}}`}}'
+                TASK_RUNTIME: devbox
+
+      Examples:
+        # basic
+        task root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic
+
+        # wildcard
+        task "root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}} --language="go""
+    desc: cdktf login
+    silent: true
+    preconditions:
+      - *TASK_RUNTIME_VAR
+    cmds:
+      - cdktf login {{.FLAGS}}
+
+  synth:
+    summary: |
+      Synthesizes Terraform code for the given app in a directory.
+
+      Task supports following vars:
+      . TASK_RUNTIME (optional) - devbox(default)
+      . FLAGS        (optional) - cdktf synth flags
+
+      Usage:
+      ---
+      includes:
+        cdktf:
+          taskfile: https://raw.githubusercontent.com/saydulaev/taskfile/main/terraform/cdktf.yml
+          internal: true
+
+      tasks:
+        root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic:
+          desc: "Basic"
+          cmds:
+            - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+              vars:
+                FLAGS: '--log-level="INFO"'
+                TASK_RUNTIME: devbox
+
+        root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}*:
+          desc: "Wildcard call"
+          cmds:
+            - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+              vars:
+                FLAGS: '{{`{{.MATCH | join " "}}`}}'
+                TASK_RUNTIME: devbox
+
+      Examples:
+        # basic
+        task root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic
+
+        # wildcard
+        task "root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}} --log-level="INFO""
+    desc: cdktf synth
+    silent: true
+    preconditions:
+      - *TASK_RUNTIME_VAR
+    cmds:
+      - cdktf synth {{.FLAGS}}
+
+  watch:
+    summary: |
+      [experimental] Watch for file changes and automatically trigger a deploy
+
+      Task supports following vars:
+      . TASK_RUNTIME (optional) - devbox(default)
+      . POSITION_FLAGS (optional) - cdktf watch position flags
+      . FLAGS        (optional) - cdktf watch flags
+
+      Usage:
+      ---
+      includes:
+        cdktf:
+          taskfile: https://raw.githubusercontent.com/saydulaev/taskfile/main/terraform/cdktf.yml
+          internal: true
+
+      tasks:
+        root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic:
+          desc: "Basic"
+          cmds:
+            - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+              vars:
+                POSITION_FLAGS: [stacks..]
+                FLAGS: '--app="APP_NAME"'
+                TASK_RUNTIME: devbox
+
+        root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}*:
+          desc: "Wildcard call"
+          cmds:
+            - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+              vars:
+                POSITION_FLAGS: [stacks..]
+                FLAGS: '{{`{{.MATCH | join " "}}`}}'
+                TASK_RUNTIME: devbox
+
+      Examples:
+        # basic
+        task root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic
+
+        # wildcard
+        task "root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}} --app="APP_NAME""
+    desc: cdktf watch [stacks..]
+    silent: true
+    preconditions:
+      - *TASK_RUNTIME_VAR
+    cmds:
+      - >
+        cdktf watch
+        {{if .POSITION_FLAGS}}{{.POSITION_FLAGS}}{{end}}
+        {{.FLAGS}}
+
+  output:
+    summary: |
+      Prints the output of stacks.
+
+      Task supports following vars:
+      . TASK_RUNTIME (optional) - devbox(default)
+      . POSITION_FLAGS (optional) - cdktf output position flags
+      . FLAGS        (optional) - cdktf output flags
+
+      Usage:
+      ---
+      includes:
+        cdktf:
+          taskfile: https://raw.githubusercontent.com/saydulaev/taskfile/main/terraform/cdktf.yml
+          internal: true
+
+      tasks:
+        root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic:
+          desc: "Basic"
+          cmds:
+            - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+              vars:
+                POSITION_FLAGS: [stacks..]
+                FLAGS: '--app="APP_NAME"'
+                TASK_RUNTIME: devbox
+
+        root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}*:
+          desc: "Wildcard call"
+          cmds:
+            - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+              vars:
+                POSITION_FLAGS: [stacks..]
+                FLAGS: '{{`{{.MATCH | join " "}}`}}'
+                TASK_RUNTIME: devbox
+
+      Examples:
+        # basic
+        task root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic
+
+        # wildcard
+        task "root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}} --app="APP_NAME""
+    desc: cdktf output [stacks..]
+    silent: true
+    preconditions:
+      - *TASK_RUNTIME_VAR
+    cmds:
+      - >
+        cdktf output
+        {{if .POSITION_FLAGS}}{{.POSITION_FLAGS}}{{end}}
+        {{.FLAGS}}
+
+  debug:
+    summary: |
+      Get debug information about the current project and environment.
+
+      Task supports following vars:
+      . TASK_RUNTIME (optional) - devbox(default)
+      . FLAGS        (optional) - cdktf debug flags
+
+      Usage:
+      ---
+      includes:
+        cdktf:
+          taskfile: https://raw.githubusercontent.com/saydulaev/taskfile/main/terraform/cdktf.yml
+          internal: true
+
+      tasks:
+        root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic:
+          desc: "Basic"
+          cmds:
+            - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+              vars:
+                FLAGS: '--log-level="INFO" --json=True'
+                TASK_RUNTIME: devbox
+
+        root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}*:
+          desc: "Wildcard call"
+          cmds:
+            - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+              vars:
+                FLAGS: '{{`{{.MATCH | join " "}}`}}'
+                TASK_RUNTIME: devbox
+
+      Examples:
+        # basic
+        task root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic
+
+        # wildcard
+        task "root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}} --log-level="INFO" --json=True"
+    desc: cdktf debug
+    silent: true
+    preconditions:
+      - *TASK_RUNTIME_VAR
+    cmds:
+      - cdktf debug {{.FLAGS}}
+
+  provider:
+    summary: |
+      A set of subcommands that facilitates provider management.
+
+      Task supports following vars:
+      . TASK_RUNTIME (optional) - devbox(default)
+      . POSITION_FLAGS (optional) - cdktf provider position flags [get,add,upgrade,list]
+      . FLAGS        (optional) - cdktf provider flags
+
+      Usage:
+      ---
+      includes:
+        cdktf:
+          taskfile: https://raw.githubusercontent.com/saydulaev/taskfile/main/terraform/cdktf.yml
+          internal: true
+
+      tasks:
+        root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic:
+          desc: "Basic"
+          cmds:
+            - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+              vars:
+                POSITION_FLAGS: get
+                FLAGS: '--log-level="INFO"'
+                TASK_RUNTIME: devbox
+
+        root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}*:
+          desc: "Wildcard call"
+          cmds:
+            - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+              vars:
+                POSITION_FLAGS: get
+                FLAGS: '{{`{{.MATCH | join " "}}`}}'
+                TASK_RUNTIME: devbox
+
+      Examples:
+        # basic
+        task root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic
+
+        # wildcard
+        task "root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}} --log-level="INFO""
+    desc: cdktf provider
+    silent: true
+    preconditions:
+      - *TASK_RUNTIME_VAR
+    cmds:
+      - >
+        cdktf
+        provider
+        {{if .POSITION_FLAGS}}{{.POSITION_FLAGS}}{{end}}
+        {{.FLAGS}}

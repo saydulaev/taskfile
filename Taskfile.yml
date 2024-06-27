@@ -7,4 +7,8 @@ includes:
   docker-compose:
     taskfile: ./docker-compose/Taskfile.yml
   terraform:
-    taskfile: ./terraform/Taskfile.yml
+    taskfile: ./terraform/terraform.yml
+  cdktf:
+    taskfile: ./terraform/cdktf.yml
+  terragrunt:
+    taskfile: ./terraform/terragrunt.yml
