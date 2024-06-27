@@ -1,0 +1,579 @@
+---
+preconditions:
+  - &TASK_RUNTIME_VAR
+    sh: '{{if eq .TASK_RUNTIME "docker"}}which docker && docker ps{{else}}which terraform{{end}}'
+    msg: |
+      {{if eq .TASK_RUNTIME "docker"}}
+      This task does not support a docker runtime.
+      {{else}}
+      Please make sure that cdktf have been installed
+      https://developer.hashicorp.com/terraform/tutorials/cdktf/cdktf-install
+      {{end}}
+
+version: '3'
+
+vars:
+  TASK_RUNTIME:
+    sh: echo "${TASK_RUNTIME:-devbox}"
+
+
+tasks:
+  aws-provider-patch:
+    summary: |
+      aws-provider-patch - Overwrite settings on nested AWS providers to work around a Terraform bug (issue #13018).
+
+      Task supports following vars:
+      . TASK_RUNTIME (optional) - devbox(default)
+      . GLOBAL_FLAGS (optional) - Terragrunt global options
+      . FLAGS        (optional) - Terragrunt aws-provider-patch options
+      
+      Usage:
+        ---
+        includes:
+          terragrunt:
+            taskfile: https://raw.githubusercontent.com/saydulaev/taskfile/main/terraform/terragrunt.yml
+            internal: true
+
+        tasks:
+          root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic:
+            desc: "Basic"
+            cmds:
+              - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+                vars:
+                  GLOBAL_FLAGS: '--terragrunt-debug'
+                  FLAGS: '--terragrunt-override-attr=key=value'
+                  TASK_RUNTIME: devbox
+
+          root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}*:
+            desc: "Wildcard call"
+            cmds:
+              - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+                vars:
+                  GLOBAL_FLAGS: '--terragrunt-debug'
+                  FLAGS: '{{`{{.MATCH | join " "}}`}}'
+                  TASK_RUNTIME: devbox
+
+        Examples:
+          # basic
+          task root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic
+
+          # wildcard
+          task "root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}} --terragrunt-override-attr=key=value"
+    desc: terragrunt aws-provider-patch [global_options] [options]
+    silent: true
+    preconditions:
+      - *TASK_RUNTIME_VAR
+    cmds:
+      - >
+        terragrunt aws-provider-patch
+        {{if .GLOBAL_FLAGS}}{{.GLOBAL_FLAGS}}{{end}}
+        {{.FLAGS}}
+  
+  catalog:
+    summary: |
+      catalog - Launch the user interface for searching and managing your module catalog.
+
+      Task supports following vars:
+      . TASK_RUNTIME (optional) - devbox(default)
+      . GLOBAL_FLAGS (optional) - Terragrunt global options
+      . FLAGS        (optional) - Terragrunt catalog options
+      
+      Usage:
+        ---
+        includes:
+          terragrunt:
+            taskfile: https://raw.githubusercontent.com/saydulaev/taskfile/main/terraform/terragrunt.yml
+            internal: true
+
+        tasks:
+          root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic:
+            desc: "Basic"
+            cmds:
+              - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+                vars:
+                  GLOBAL_FLAGS: '--terragrunt-debug'
+                  FLAGS: '--terragrunt-override-attr=key=value'
+                  TASK_RUNTIME: devbox
+
+          root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}*:
+            desc: "Wildcard call"
+            cmds:
+              - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+                vars:
+                  GLOBAL_FLAGS: '--terragrunt-debug'
+                  FLAGS: '{{`{{.MATCH | join " "}}`}}'
+                  TASK_RUNTIME: devbox
+
+        Examples:
+          # basic
+          task root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic
+
+          # wildcard
+          task "root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}"
+    desc: terragrunt catalog [global_options] [options]
+    silent: true
+    preconditions:
+      - *TASK_RUNTIME_VAR
+    cmds:
+      - >
+        terragrunt catalog
+        {{if .GLOBAL_FLAGS}}{{.GLOBAL_FLAGS}}{{end}}
+        {{.FLAGS}}
+  
+  graph:
+    summary: |
+      graph - Execute commands on the full graph of dependent modules for the current module, ensuring correct execution order.
+
+      Task supports following vars:
+      . TASK_RUNTIME (optional) - devbox(default)
+      . COMMANDS: aws-provider-patch/graph-dependencies/hclfmt/render-json/terragrunt-info/validate-inputs/*
+      . GLOBAL_FLAGS (optional) - Terragrunt global options
+      . FLAGS        (optional) - Terragrunt graph options
+      
+      Usage:
+        ---
+        includes:
+          terragrunt:
+            taskfile: https://raw.githubusercontent.com/saydulaev/taskfile/main/terraform/terragrunt.yml
+            internal: true
+
+        tasks:
+          root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic:
+            desc: "Basic"
+            cmds:
+              - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+                vars:
+                  COMMANDS: graph-dependencies
+                  GLOBAL_FLAGS: '--terragrunt-debug'
+                  FLAGS: '--terragrunt-no-color'
+                  TASK_RUNTIME: devbox
+
+          root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}*:
+            desc: "Wildcard call"
+            cmds:
+              - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+                vars:
+                  GLOBAL_FLAGS: '--terragrunt-debug'
+                  FLAGS: '{{`{{.MATCH | join " "}}`}}'
+                  TASK_RUNTIME: devbox
+
+        Examples:
+          # basic
+          task root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic
+
+          # wildcard
+          task "root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}} --terragrunt-no-color"
+    desc: terragrunt graph <command> [global_options] [options]
+    silent: true
+    preconditions:
+      - *TASK_RUNTIME_VAR
+    cmds:
+      - >
+        terragrunt graph
+        {{COMMANDS}}
+        {{if .GLOBAL_FLAGS}}{{.GLOBAL_FLAGS}}{{end}}
+        {{.FLAGS}}
+
+  graph-dependencies:
+    summary: |
+      graph-dependencies - Prints the terragrunt dependency graph to stdout.
+
+      Task supports following vars:
+      . TASK_RUNTIME (optional) - devbox(default)
+      . GLOBAL_FLAGS (optional) - Terragrunt global options
+      
+      Usage:
+        ---
+        includes:
+          terragrunt:
+            taskfile: https://raw.githubusercontent.com/saydulaev/taskfile/main/terraform/terragrunt.yml
+            internal: true
+
+        tasks:
+          root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic:
+            desc: "Basic"
+            cmds:
+              - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+                vars:
+                  GLOBAL_FLAGS: '--terragrunt-debug'
+                  TASK_RUNTIME: devbox
+
+          root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}*:
+            desc: "Wildcard call"
+            cmds:
+              - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+                vars:
+                  GLOBAL_FLAGS: '--terragrunt-debug'
+                  TASK_RUNTIME: devbox
+
+        Examples:
+          # basic
+          task root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic
+
+          # wildcard
+          task "root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}"
+    desc: terragrunt graph-dependencies [global_options]
+    silent: true
+    preconditions:
+      - *TASK_RUNTIME_VAR
+    cmds:
+      - >
+        terragrunt graph-dependencies
+        {{if .GLOBAL_FLAGS}}{{.GLOBAL_FLAGS}}{{end}}
+  
+  hclfmt:
+    summary: |
+      hclfmt - Recursively find hcl files and rewrite them into a canonical format.
+
+      Task supports following vars:
+      . TASK_RUNTIME (optional) - devbox(default)
+      . GLOBAL_FLAGS (optional) - Terragrunt global options
+      . FLAGS        (optional) - Terragrunt hclfmt options
+      
+      Usage:
+        ---
+        includes:
+          terragrunt:
+            taskfile: https://raw.githubusercontent.com/saydulaev/taskfile/main/terraform/terragrunt.yml
+            internal: true
+
+        tasks:
+          root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic:
+            desc: "Basic"
+            cmds:
+              - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+                vars:
+                  GLOBAL_FLAGS: '--terragrunt-debug'
+                  FLAGS: '--terragrunt-check --terragrunt-diff'
+                  TASK_RUNTIME: devbox
+
+          root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}*:
+            desc: "Wildcard call"
+            cmds:
+              - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+                vars:
+                  GLOBAL_FLAGS: '--terragrunt-debug'
+                  FLAGS: '{{`{{.MATCH | join " "}}`}}'
+                  TASK_RUNTIME: devbox
+
+        Examples:
+          # basic
+          task root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic
+
+          # wildcard
+          task "root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}} --terragrunt-check --terragrunt-diff"
+    desc: terragrunt hclfmt [global_options] [options]
+    silent: true
+    preconditions:
+      - *TASK_RUNTIME_VAR
+    cmds:
+      - >
+        terragrunt hclfmt
+        {{if .GLOBAL_FLAGS}}{{.GLOBAL_FLAGS}}{{end}}
+        {{.FLAGS}}
+  
+  output-module-groups:
+    summary: |
+      output-module-groups - Output groups of modules ordered by command (apply or destroy) as a list of list in JSON (useful for CI use cases).
+
+      Task supports following vars:
+      . TASK_RUNTIME (optional) - devbox(default)
+      . COMMANDS: apply/destroy
+      . GLOBAL_FLAGS (optional) - Terragrunt global options
+      
+      Usage:
+        ---
+        includes:
+          terragrunt:
+            taskfile: https://raw.githubusercontent.com/saydulaev/taskfile/main/terraform/terragrunt.yml
+            internal: true
+
+        tasks:
+          root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic:
+            desc: "Basic"
+            cmds:
+              - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+                vars:
+                  COMMANDS: apply
+                  GLOBAL_FLAGS: '--terragrunt-debug'
+                  TASK_RUNTIME: devbox
+
+          root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}*:
+            desc: "Wildcard call"
+            cmds:
+              - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+                vars:
+                  COMMANDS: apply
+                  GLOBAL_FLAGS: '--terragrunt-debug'
+                  TASK_RUNTIME: devbox
+
+        Examples:
+          # basic
+          task root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic
+
+          # wildcard
+          task "root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}"
+    desc: terragrunt output-module-groups <command> [global_options]
+    silent: true
+    preconditions:
+      - *TASK_RUNTIME_VAR
+    cmds:
+      - >
+        terragrunt output-module-groups
+        {{COMMANDS}}
+        {{if .GLOBAL_FLAGS}}{{.GLOBAL_FLAGS}}{{end}}
+
+  render-json:
+    summary: |
+      render-json - Render the final terragrunt config, with all variables, includes, and functions resolved, as json.
+
+      Task supports following vars:
+      . TASK_RUNTIME (optional) - devbox(default)
+      . GLOBAL_FLAGS (optional) - Terragrunt global options
+      . FLAGS        (optional) - Terragrunt render-json options
+      
+      Usage:
+        ---
+        includes:
+          terragrunt:
+            taskfile: https://raw.githubusercontent.com/saydulaev/taskfile/main/terraform/terragrunt.yml
+            internal: true
+
+        tasks:
+          root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic:
+            desc: "Basic"
+            cmds:
+              - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+                vars:
+                  GLOBAL_FLAGS: '--terragrunt-debug'
+                  FLAGS: '--terragrunt-json-disable-dependent-modules'
+                  TASK_RUNTIME: devbox
+
+          root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}*:
+            desc: "Wildcard call"
+            cmds:
+              - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+                vars:
+                  GLOBAL_FLAGS: '--terragrunt-debug'
+                  FLAGS: '{{`{{.MATCH | join " "}}`}}'
+                  TASK_RUNTIME: devbox
+
+        Examples:
+          # basic
+          task root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic
+
+          # wildcard
+          task "root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}} --terragrunt-json-disable-dependent-modules"
+    desc: terragrunt render-json [global_options] [options]
+    silent: true
+    preconditions:
+      - *TASK_RUNTIME_VAR
+    cmds:
+      - >
+        terragrunt render-json
+        {{if .GLOBAL_FLAGS}}{{.GLOBAL_FLAGS}}{{end}}
+        {{.FLAGS}}
+  
+  run-all:
+    summary: |
+      run-all - Run a terraform command against a 'stack' by running the specified command in each subfolder.
+
+      Task supports following vars:
+      . TASK_RUNTIME (optional) - devbox(default)
+      . COMMANDS: aws-provider-patch/graph-dependencies/hclfmt/render-json/terragrunt-info/validate-inputs
+      . GLOBAL_FLAGS (optional) - Terragrunt global options
+      . FLAGS        (optional) - Terragrunt run-all options
+      
+      Usage:
+        ---
+        includes:
+          terragrunt:
+            taskfile: https://raw.githubusercontent.com/saydulaev/taskfile/main/terraform/terragrunt.yml
+            internal: true
+
+        tasks:
+          root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic:
+            desc: "Basic"
+            cmds:
+              - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+                vars:
+                  GLOBAL_FLAGS: '--terragrunt-debug'
+                  COMMANDS: graph-dependencies
+                  FLAGS: '--terragrunt-json-out-dir="."'
+                  TASK_RUNTIME: devbox
+
+          root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}*:
+            desc: "Wildcard call"
+            cmds:
+              - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+                vars:
+                  GLOBAL_FLAGS: '--terragrunt-debug'
+                  COMMANDS: graph-dependencies
+                  FLAGS: '{{`{{.MATCH | join " "}}`}}'
+                  TASK_RUNTIME: devbox
+
+        Examples:
+          # basic
+          task root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic
+
+          # wildcard
+          task "root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}} --terragrunt-json-out-dir=."
+    desc: terragrunt run-all <command> [global_options] [options]
+    silent: true
+    preconditions:
+      - *TASK_RUNTIME_VAR
+    cmds:
+      - >
+        terragrunt run-all
+        {{COMMANDS}}
+        {{if .GLOBAL_FLAGS}}{{.GLOBAL_FLAGS}}{{end}}
+        {{.FLAGS}}
+  
+  scaffold:
+    summary: |
+      scaffold - Scaffold a new Terragrunt module.
+
+      Task supports following vars:
+      . TASK_RUNTIME (optional) - devbox(default)
+      . GLOBAL_FLAGS (optional) - Terragrunt global options
+      . FLAGS        (optional) - Terragrunt scaffold options
+      
+      Usage:
+        ---
+        includes:
+          terragrunt:
+            taskfile: https://raw.githubusercontent.com/saydulaev/taskfile/main/terraform/terragrunt.yml
+            internal: true
+
+        tasks:
+          root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic:
+            desc: "Basic"
+            cmds:
+              - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+                vars:
+                  GLOBAL_FLAGS: '--terragrunt-debug'
+                  FLAGS: '--var-file=FILE'
+                  TASK_RUNTIME: devbox
+
+          root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}*:
+            desc: "Wildcard call"
+            cmds:
+              - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+                vars:
+                  GLOBAL_FLAGS: '--terragrunt-debug'
+                  FLAGS: '{{`{{.MATCH | join " "}}`}}'
+                  TASK_RUNTIME: devbox
+
+        Examples:
+          # basic
+          task root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic
+
+          # wildcard
+          task "root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}} --var-file=FILE"
+    desc: terragrunt scaffold [global_options] [options]
+    silent: true
+    preconditions:
+      - *TASK_RUNTIME_VAR
+    cmds:
+      - >
+        terragrunt scaffold
+        {{if .GLOBAL_FLAGS}}{{.GLOBAL_FLAGS}}{{end}}
+        {{.FLAGS}}
+  
+  terragrunt-info:
+    summary: |
+      terragrunt-info - Emits limited terragrunt state on stdout and exits.
+
+      Task supports following vars:
+      . TASK_RUNTIME (optional) - devbox(default)
+      . GLOBAL_FLAGS (optional) - Terragrunt global options
+      
+      Usage:
+        ---
+        includes:
+          terragrunt:
+            taskfile: https://raw.githubusercontent.com/saydulaev/taskfile/main/terraform/terragrunt.yml
+            internal: true
+
+        tasks:
+          root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic:
+            desc: "Basic"
+            cmds:
+              - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+                vars:
+                  GLOBAL_FLAGS: '--terragrunt-debug'
+                  TASK_RUNTIME: devbox
+
+          root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}*:
+            desc: "Wildcard call"
+            cmds:
+              - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+                vars:
+                  GLOBAL_FLAGS: '--terragrunt-debug'
+                  TASK_RUNTIME: devbox
+
+        Examples:
+          # basic
+          task root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic
+
+          # wildcard
+          task "root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}"
+    desc: terragrunt terragrunt-info [global_options]
+    silent: true
+    preconditions:
+      - *TASK_RUNTIME_VAR
+    cmds:
+      - >
+        terragrunt terragrunt-info
+        {{if .GLOBAL_FLAGS}}{{.GLOBAL_FLAGS}}{{end}}
+  
+  validate-inputs:
+    summary: |
+      validate-inputs - Checks if the terragrunt configured inputs align with the terraform defined variables.
+
+      Task supports following vars:
+      . TASK_RUNTIME (optional) - devbox(default)
+      . GLOBAL_FLAGS (optional) - Terragrunt global options
+      . FLAGS        (optional) - Terragrunt validate-inputs options
+      
+      Usage:
+        ---
+        includes:
+          terragrunt:
+            taskfile: https://raw.githubusercontent.com/saydulaev/taskfile/main/terraform/terragrunt.yml
+            internal: true
+
+        tasks:
+          root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic:
+            desc: "Basic"
+            cmds:
+              - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+                vars:
+                  GLOBAL_FLAGS: '--terragrunt-debug'
+                  FLAGS: '--terragrunt-strict-validate'
+                  TASK_RUNTIME: devbox
+
+          root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}*:
+            desc: "Wildcard call"
+            cmds:
+              - task: {{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join ":"}}{{else}}{{.TASK}}{{end}}
+                vars:
+                  GLOBAL_FLAGS: '--terragrunt-debug'
+                  FLAGS: '{{`{{.MATCH | join " "}}`}}'
+                  TASK_RUNTIME: devbox
+
+        Examples:
+          # basic
+          task root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}}-basic
+
+          # wildcard
+          task "root:{{if gt (len (splitList ":" .TASK)) 2}}{{slice (splitList ":" .TASK) 1 | join "-"}}{{else}}{{.TASK}}{{end}} --terragrunt-strict-validate"
+    desc: terragrunt validate-inputs [global_options] [options]
+    silent: true
+    preconditions:
+      - *TASK_RUNTIME_VAR
+    cmds:
+      - >
+        terragrunt validate-inputs
+        {{if .GLOBAL_FLAGS}}{{.GLOBAL_FLAGS}}{{end}}
+        {{.FLAGS}}
